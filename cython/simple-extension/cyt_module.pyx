@@ -13,3 +13,8 @@ def list_subtract(x, y):
 def np_subtract(x, y):
     result = x - y
     return result
+
+def add (int x, int y):  # static typing
+    cdef int result # static typing
+    result = x + y
+    return result
