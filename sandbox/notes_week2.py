@@ -76,3 +76,86 @@ ar  = np.concatenate((b,c), axis=0)
 
 b1,c1 = np.split(a, 2, axis=1)
 ar1  = np.concatenate((b1,c1), axis=1)
+
+### translation with broadcasting ###
+
+rawdat = np.genfromtxt('../numpy/broadcast-translation/points_circle.dat')
+#x,y = rawdat[:,0],rawdat[:,1]
+
+dat = np.zeros_like(rawdat)
+
+transVec = np.array([2.1,1.1])
+
+dat = rawdat+transVec
+
+fig,ax = plt.subplots()
+
+ax.plot(*rawdat.T,marker='o',ls='')
+ax.plot(*dat.T,marker='x',ls='')
+plt.show(block=False)
+
+### I/O ###
+
+rawdat = np.loadtxt('../numpy/input-output/xy-coordinates.dat')
+rawdat[:,1] +=2.5
+np.savetxt('./xy-coordinates_shifted.dat', rawdat, fmt='%.6f', header='modified data')
+
+### Random number generators ###
+
+a = np.random.random((2,2))
+print(a)
+
+b = np.random.choice(np.arange(4), 10) # choose provded N x randomly from a provided list
+print(b)
+
+### ###
+
+a = np.random.random((10000))
+b = np.random.randn((10000))
+
+def xtract(A, binW=10):
+    fig,ax=plt.subplots()
+    m = np.mean(A)
+    s = np.std(A)
+    ax.hist(A,bins=int(A.size/binW))
+    dy = np.diff(ax.get_ylim())
+    ax.axvline(x=m, ls=':', color='red')
+    ax.axvline(x=m-s, ls=':', color='red')
+    ax.axvline(x=m+s, ls=':', color='red')
+    ax.text(m,dy/2,'mean: {0:.2f}'.format(m))
+    ax.text(m,dy/3,'std.dev.: {0:.2f}'.format(s))
+    
+    return fig
+
+xtract(a, binW=100)
+xtract(b, binW=100)
+
+### linear-algebra ###
+
+A = np.random.random((2,2))
+B = np.random.random((2,2))
+
+Asym = A+A.T
+Bsym = B+B.T
+
+C = np.dot(Asym,Bsym)
+
+eigs = np.linalg.eigvals(C)
+print("Eigenvalues are: " + str(eigs))
+
+### Temporary arrays ###
+
+a = np.random.random((1024, 1024, 50))
+b = np.random.random((1024, 1024, 50))
+c = (np.sin(a) + np.cos(b)) + 2.0 * a - 4.5 * b
+
+
+### Numexpr
+
+x = np.random.random((1000000, 1))
+y = np.random.random((1000000, 1))
+
+import numexpr
+poly = numexpr.evaluate("((.25*x + .75)*x - 1.5)*x - 2")
+
+
