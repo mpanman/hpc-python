@@ -3,10 +3,12 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+from _evolve import ffi,lib
+
 # Set the colormap
 plt.rcParams['image.cmap'] = 'BrBG'
 
-def evolve(u, u_previous, a, dt, dx2, dy2):
+def evolve_deprecated(u, u_previous, a, dt, dx2, dy2):
     """Explicit time evolution.
        u:            new temperature field
        u_previous:   previous field
@@ -33,9 +35,14 @@ def iterate(field, field0, a, dx, dy, timesteps, image_interval):
     # For stability, this is the largest interval possible
     # for the size of the time-step:
     dt = dx2*dy2 / ( 2*a*(dx2+dy2) )    
+    nx,ny=field.shape
+    
+    field_ptr = ffi.cast("double *", ffi.from_buffer(field))
+    field0_ptr = ffi.cast("double *", ffi.from_buffer(field0))
 
+    
     for m in range(1, timesteps+1):
-        evolve(field, field0, a, dt, dx2, dy2)
+        lib.evolve(field_ptr, field0_ptr, nx, ny, a, dt, dx2, dy2)
         if m % image_interval == 0:
             write_field(field, m)
 
